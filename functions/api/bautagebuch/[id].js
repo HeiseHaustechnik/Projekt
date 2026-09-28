@@ -25,6 +25,10 @@ export async function onRequestPut({ env, params, request }) {
 
 // DELETE /api/bautagebuch/:id
 export async function onRequestDelete({ env, params }) {
-  await env.DB.prepare('UPDATE bautagebuch SET deleted = 1, updated_at = ? WHERE id = ?').bind(now(), params.id).run();
+  const t = now();
+  await env.DB.batch([
+    env.DB.prepare('UPDATE bautagebuch SET deleted = 1, updated_at = ? WHERE id = ?').bind(t, params.id),
+    env.DB.prepare('UPDATE bautagebuch_fotos SET deleted = 1, updated_at = ? WHERE eintrag_id = ?').bind(t, params.id)
+  ]);
   return json({ ok: true });
 }
