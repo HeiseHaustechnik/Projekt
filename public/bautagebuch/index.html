@@ -45,6 +45,14 @@
 .sheet::before{content:"";position:absolute;top:9px;left:50%;width:40px;height:5px;border-radius:3px;background:var(--line);transform:translateX(-50%)}
 .sheet.on{transform:none}
 .sheet h2{font-size:20px;font-weight:760;margin-bottom:14px}
+.fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.fotos .ft{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--surface-2);padding:0}
+.fotos .ft img{width:100%;height:100%;object-fit:cover;display:block}
+.fotos .ft .nt{position:absolute;left:0;right:0;bottom:0;padding:14px 6px 5px;font-size:11px;font-weight:650;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.65));text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fotos .ft .up{position:absolute;top:6px;right:6px;width:10px;height:10px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 2px #fff}
+.fotos .fadd{aspect-ratio:1;border-radius:14px;display:grid;place-items:center;align-content:center;gap:6px;color:var(--accent-2);background:var(--amber-bg);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 45%,transparent);font-weight:700;font-size:12.5px;text-align:center;padding:6px}
+.fotos .fadd .ic{width:26px;height:26px}
+.fbig{width:100%;max-height:52vh;object-fit:contain;border-radius:14px;background:#000;display:block;margin-bottom:12px}
 .bottombar{position:sticky;bottom:0;z-index:5;padding:12px 0 calc(8px + var(--safe-b));background:linear-gradient(transparent,var(--bg) 30%);display:flex;gap:10px}
 .bottombar .btn{flex:1}
 </style>
@@ -109,9 +117,10 @@ async function flush(){
       else if(it.kind==='entry') await api('bautagebuch/'+it.id,{method:'PUT',body:JSON.stringify(it.data)});
       else if(it.kind==='del') await api('bautagebuch/'+it.id,{method:'DELETE'});
       else if(it.kind==='proj') await api('projekte/'+it.id,{method:'PUT',body:JSON.stringify(it.data)});
+      else if(it.kind==='foto'){ const f=await idb.get(it.id); if(f){ const d={...f}; delete d.pending; if(d.deleted) delete d.bild; await api('fotos/'+it.id,{method:'PUT',body:JSON.stringify(d)}); if(f.deleted) await idb.del(f.id); else { const g=await idb.get(f.id); if(g&&g.updated_at===f.updated_at){ g.pending=false; await idb.put(g); } } } }
       q=queue().filter(x=>!(x.kind===it.kind && x.id===it.id && x.data?.updated_at===it.data?.updated_at)); ls.set(K.queue,q);
     }
-    updSync();
+    updSync(); if(E&&$('#fList')){ idb.byEntry(E.id).then(a=>{ FOTOS=a.filter(f=>!f.deleted).sort((x,y)=>(x.sort-y.sort)||x.created_at.localeCompare(y.created_at)); renderFotos(); }).catch(()=>{}); }
   }catch(e){ console.error(e); setSync('err','nicht gespeichert: '+e.message.slice(0,50)); }
   flushing=false;
 }
@@ -131,7 +140,7 @@ async function loadBase(){
     LIST=[...list.filter(x=>!pendE.some(y=>y.id===x.id)),...pendE.map(listRow)].sort((a,b)=>b.datum.localeCompare(a.datum)); ls.set(K.list,LIST);
   }catch(e){ if(!PROJ) throw e; }
 }
-const listRow=e=>({id:e.id,datum:e.datum,von:e.von,bis:e.bis,pause_min:e.pause_min,wetter:e.wetter,personen:typeof e.personen==='string'?e.personen:JSON.stringify(e.personen||[]),verfasser:e.verfasser,taetigkeit:(e.taetigkeit||'').slice(0,160),sig_ma:!!e.sig1,sig_ag:!!e.sig2});
+const listRow=e=>({id:e.id,datum:e.datum,von:e.von,bis:e.bis,pause_min:e.pause_min,wetter:e.wetter,personen:typeof e.personen==='string'?e.personen:JSON.stringify(e.personen||[]),verfasser:e.verfasser,taetigkeit:(e.taetigkeit||'').slice(0,160),sig_ma:!!e.sig1,sig_ag:!!e.sig2,fotos:e.fotos_n??(LIST.find(x=>x.id===e.id)?.fotos||0)});
 
 /* ================= Liste ================= */
 function hours(von,bis,pause){ if(!von||!bis) return 0; const [a,b]=[von,bis].map(t=>{ const [h,m]=t.split(':').map(Number); return h*60+m; }); let d=b-a; if(d<0) d+=1440; return Math.max(0,(d-(Number(pause)||0))/60); }
@@ -153,7 +162,7 @@ function renderList(){
       return `<a class="row-card" href="?p=${PID}&id=${e.id}">
         <div class="day"><small>${WT[d.getDay()]}</small><b>${d.getDate()}.${d.getMonth()+1}.</b></div>
         <div class="mt"><b>${e.von&&e.bis?esc(e.von)+' – '+esc(e.bis)+' Uhr':'ohne Arbeitszeit'}</b>
-          <small>${hStr(hours(e.von,e.bis,e.pause_min))} · ${pc} ${pc==1?'Person':'Personen'}${e.wetter?' · '+esc(e.wetter.split(' · ')[0]):''}</small>
+          <small>${hStr(hours(e.von,e.bis,e.pause_min))} · ${pc} ${pc==1?'Person':'Personen'}${e.fotos?' · '+e.fotos+' Foto'+(e.fotos>1?'s':''):''}${e.wetter?' · '+esc(e.wetter.split(' · ')[0]):''}</small>
           ${e.taetigkeit?`<span class="desc">${esc(e.taetigkeit)}</span>`:''}
           <div class="tags">${e.sig_ma?'<span class="pill tone-ok"><i></i>Mitarbeiter</span>':'<span class="pill tone-amber"><i></i>nicht unterschrieben</span>'}${e.sig_ag?'<span class="pill tone-ok"><i></i>Auftraggeber</span>':''}</div></div>
         <span class="chev">${IC('chev')}</span></a>`; }).join('')
@@ -181,7 +190,7 @@ function saveEntry(e,silent){
 let saveT=null;
 function changed(field){
   // Nach Unterschrift geändert → Unterschriften zurücksetzen
-  if(field!=='sig' && (E.sig1||E.sig2)){ E.sig1=null; E.sig2=null; E.sig_ts=null; drawSigs(); toast('Eintrag geändert – Unterschriften wurden zurückgesetzt'); }
+  if(!['sig','verfasser','ag_name'].includes(field) && (E.sig1||E.sig2)){ E.sig1=null; E.sig2=null; E.sig_ts=null; drawSigs(); toast('Eintrag geändert – Unterschriften wurden zurückgesetzt'); }
   clearTimeout(saveT); saveT=setTimeout(()=>saveEntry(E),500); setSync('','wird gespeichert …');
 }
 async function loadEntry(id){
@@ -225,6 +234,12 @@ function renderEntry(){
       <div class="field"><label>Besonderheiten, Behinderungen, Anordnungen (optional)</label><textarea class="inp" id="f_b" rows="3" placeholder="z. B. Gerüst fehlte bis 10 Uhr, Anordnung Bauleitung zu …">${esc(e.besonderheiten)}</textarea></div>
     </div>
 
+    <div class="card"><h2>Fotos</h2>
+      <div class="fotos" id="fList"></div>
+      <input type="file" id="fIn" accept="image/*" multiple hidden>
+      <p class="hint" style="margin-top:10px">Aufnehmen oder aus der Galerie wählen. Antippen zum Beschriften oder Löschen.</p>
+    </div>
+
     <div class="card"><h2>Unterschriften</h2>
       <div class="grid2">
         <div>
@@ -238,7 +253,7 @@ function renderEntry(){
           <div class="sigbar"><span id="sig2t"></span><button class="lnk" data-clr="sig2">Löschen</button></div>
         </div>
       </div>
-      <p class="hint" style="margin-top:10px">Wird der Eintrag danach geändert, werden die Unterschriften zurückgesetzt.</p>
+      <p class="hint" style="margin-top:10px">Werden Arbeitszeit, Wetter, Personen oder Tätigkeiten nach der Unterschrift geändert, werden die Unterschriften zurückgesetzt. Namen und Fotos können jederzeit ergänzt werden.</p>
     </div>
 
     <div class="bottombar">
@@ -250,12 +265,12 @@ function renderEntry(){
   const bind=(id,field,conv=v=>v)=>{ const el=$('#'+id); el.addEventListener('input',()=>{ E[field]=conv(el.value); if(field==='verfasser') ls.set('btb_verfasser',E.verfasser); if(['von','bis','pause_min'].includes(field)) updHours(); changed(field); }); };
   bind('f_von','von'); bind('f_bis','bis'); bind('f_pause','pause_min',Number); bind('f_wetter','wetter'); bind('f_t','taetigkeit'); bind('f_b','besonderheiten'); bind('f_verf','verfasser'); bind('f_ag','ag_name');
   $('#f_von').addEventListener('change',()=>loadWeather(false)); $('#f_bis').addEventListener('change',()=>loadWeather(false));
-  updHours(); renderPeople(); setupSigs(); showWeather();
+  updHours(); renderPeople(); setupSigs(); showWeather(); setupFotos();
   if(!E.wetter_daten) loadWeather(true);
   $('#wReload').onclick=()=>loadWeather(true,true);
   $('#bPdf').onclick=async()=>{ if(!ready()) return; const b=await makePdf(); dl(b,fileName()); };
   $('#bMail').onclick=sendPdf;
-  $('#bDel').onclick=()=>{ if(!confirm('Diesen Tageseintrag endgültig löschen?')) return; LIST=LIST.filter(x=>x.id!==E.id); ls.set(K.list,LIST); localStorage.removeItem(K.ent(E.id));
+  $('#bDel').onclick=()=>{ if(!confirm('Diesen Tageseintrag endgültig löschen?')) return; LIST=LIST.filter(x=>x.id!==E.id); ls.set(K.list,LIST); localStorage.removeItem(K.ent(E.id)); FOTOS.forEach(f=>idb.del(f.id)); ls.set(K.queue,queue().filter(x=>!(x.kind==='foto'&&FOTOS.some(f=>f.id===x.id))));
     const q=queue().filter(x=>!(x.kind==='entry'&&x.id===E.id)); ls.set(K.queue,q); enqueue({kind:'del',id:E.id,data:{updated_at:nowIso()}}); setTimeout(()=>location.href='?p='+PID,300); };
 }
 function updHours(){ $('#f_h').textContent='Arbeitszeit '+hStr(hours(E.von,E.bis,E.pause_min)); }
@@ -339,6 +354,72 @@ function showWeather(){
   $('#wSub').textContent=`${w.psum>0?'Niederschlag '+w.psum.toLocaleString('de-DE')+' mm':'Kein Niederschlag'} · Wind bis ${w.wmax} km/h · ${w.von}–${w.bis} Uhr · ${w.ort}`;
 }
 
+/* ================= Fotos ================= */
+// Fotos liegen lokal in IndexedDB (zu groß für localStorage) und werden über die Warteschlange hochgeladen.
+const idb=(()=>{ let dbp=null;
+  const open=()=>dbp||(dbp=new Promise((res,rej)=>{ const r=indexedDB.open('heise-btb',1); r.onupgradeneeded=()=>{ const s=r.result.createObjectStore('fotos',{keyPath:'id'}); s.createIndex('eintrag','eintrag_id'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }));
+  const tx=async(mode,fn)=>{ const db=await open(); return new Promise((res,rej)=>{ const t=db.transaction('fotos',mode); const st=t.objectStore('fotos'); const rq=fn(st); t.oncomplete=()=>res(rq?.result); t.onerror=()=>rej(t.error); }); };
+  return { get:id=>tx('readonly',s=>s.get(id)), put:o=>tx('readwrite',s=>s.put(o)), del:id=>tx('readwrite',s=>s.delete(id)),
+    byEntry:eid=>tx('readonly',s=>s.index('eintrag').getAll(eid)) };
+})();
+let FOTOS=[];
+async function loadFotos(){
+  let local=[]; try{ local=await idb.byEntry(E.id); }catch(e){}
+  FOTOS=local.filter(f=>!f.deleted).sort((a,b)=>(a.sort-b.sort)||a.created_at.localeCompare(b.created_at)); renderFotos();
+  if(!navigator.onLine) return;
+  try{
+    const srv=await api('bautagebuch/'+E.id+'/fotos');
+    for(const f of srv){ const l=local.find(x=>x.id===f.id); if(!l||(!l.pending&&l.updated_at!==f.updated_at)) await idb.put({...f,projekt_id:PID,pending:false}); }
+    for(const l of local){ if(!l.pending&&!srv.some(f=>f.id===l.id)) await idb.del(l.id); }
+    const all=await idb.byEntry(E.id);
+    FOTOS=all.filter(f=>!f.deleted).sort((a,b)=>(a.sort-b.sort)||a.created_at.localeCompare(b.created_at)); renderFotos();
+  }catch(e){ console.warn('Fotos',e); }
+}
+function renderFotos(){
+  const el=$('#fList'); if(!el) return;
+  el.innerHTML=FOTOS.map(f=>`<button class="ft" data-id="${f.id}"><img src="${f.bild}" alt="">${f.notiz?`<span class="nt">${esc(f.notiz)}</span>`:''}${f.pending?'<span class="up" title="wird hochgeladen"></span>':''}</button>`).join('')
+    +`<button class="fadd" id="fAdd">${IC('camera')}Foto hinzufügen</button>`;
+  el.querySelectorAll('.ft').forEach(b=>b.onclick=()=>editFoto(b.dataset.id));
+  $('#fAdd').onclick=()=>$('#fIn').click();
+  const row=LIST.find(x=>x.id===E.id); if(row&&row.fotos!==FOTOS.length){ row.fotos=FOTOS.length; ls.set(K.list,LIST); }
+  E.fotos_n=FOTOS.length;
+}
+function setupFotos(){
+  $('#fIn').onchange=async ev=>{
+    const files=[...ev.target.files]; ev.target.value=''; if(!files.length) return;
+    toast(files.length>1?files.length+' Fotos werden verarbeitet …':'Foto wird verarbeitet …');
+    for(const file of files){
+      try{
+        const bild=await shrink(file);
+        const t=nowIso(); const f={id:uid(),eintrag_id:E.id,projekt_id:PID,sort:(FOTOS.at(-1)?.sort||0)+1,notiz:'',bild,created_at:t,updated_at:t,deleted:0,pending:true};
+        await idb.put(f); FOTOS.push(f); renderFotos(); enqueue({kind:'foto',id:f.id,data:{updated_at:t}});
+      }catch(e){ console.error(e); toast('Foto konnte nicht gelesen werden'); }
+    }
+  };
+  loadFotos();
+}
+// Verkleinern auf max. 1600 px (lange Seite), JPEG
+async function shrink(file){
+  const url=URL.createObjectURL(file);
+  try{
+    const img=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('Bild')); i.src=url; });
+    const max=1600, s=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+    const c=document.createElement('canvas'); c.width=Math.round(img.naturalWidth*s); c.height=Math.round(img.naturalHeight*s);
+    const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(img,0,0,c.width,c.height);
+    let q=.75, d=c.toDataURL('image/jpeg',q); while(d.length>1400000&&q>.35){ q-=.1; d=c.toDataURL('image/jpeg',q); }
+    return d;
+  }finally{ URL.revokeObjectURL(url); }
+}
+function editFoto(id){
+  const f=FOTOS.find(x=>x.id===id); if(!f) return;
+  openSheet(`<img class="fbig" src="${f.bild}" alt="">
+    <div class="field"><label>Beschriftung (optional)</label><input class="inp" id="fn" value="${esc(f.notiz)}" placeholder="z. B. Achse 12, Leitung vor dem Verfüllen"></div>
+    <div class="btnrow"><button class="btn del" id="fDel">Löschen</button><button class="btn cta" id="fOk">Fertig</button></div>`,()=>{
+    $('#fOk').onclick=async()=>{ const n=$('#fn').value.trim(); if(n!==f.notiz){ f.notiz=n; f.updated_at=nowIso(); f.pending=true; await idb.put(f); enqueue({kind:'foto',id:f.id,data:{updated_at:f.updated_at}}); } closeSheet(); renderFotos(); };
+    $('#fDel').onclick=async()=>{ if(!confirm('Dieses Foto löschen?')) return; f.deleted=1; f.updated_at=nowIso(); f.pending=true; await idb.put(f); FOTOS=FOTOS.filter(x=>x.id!==f.id); enqueue({kind:'foto',id:f.id,data:{updated_at:f.updated_at}}); closeSheet(); renderFotos(); };
+  });
+}
+
 /* ================= Unterschriften ================= */
 function setupSigs(){
   ['sig1','sig2'].forEach(id=>{
@@ -388,6 +469,19 @@ async function makePdf(){
     lines.forEach(l=>{ y+=5; if(y>275){ doc.addPage(); y=20; } doc.text(l,M,y); }); y+=8; };
   para('Ausgeführte Arbeiten',E.taetigkeit);
   if(E.besonderheiten.trim()) para('Besonderheiten, Behinderungen, Anordnungen',E.besonderheiten);
+  if(FOTOS.length){
+    sec('Fotos ('+FOTOS.length+')'); y+=3;
+    const gw=(W-2*M-8)/2, gh=gw*0.75;
+    FOTOS.forEach((f,i)=>{
+      const col=i%2; if(col===0&&i>0) y+=gh+(8);
+      if(col===0&&y+gh+6>280){ doc.addPage(); y=20; }
+      const x=M+col*(gw+8);
+      try{ const ip=doc.getImageProperties(f.bild); let ww=gw, hh=ww*ip.height/ip.width; if(hh>gh){ hh=gh; ww=hh*ip.width/ip.height; }
+        doc.addImage(f.bild,'JPEG',x+(gw-ww)/2,y+(gh-hh)/2,ww,hh,undefined,'FAST'); }catch(e){}
+      doc.setFontSize(8); doc.setTextColor(90); doc.text(doc.splitTextToSize((i+1)+(f.notiz?' · '+f.notiz:''),gw)[0],x,y+gh+4); doc.setTextColor(58,58,58);
+    });
+    y+=gh+12;
+  }
   if(y>235){ doc.addPage(); y=24; }
   sec('Unterschriften'); y+=4;
   const bw=(W-2*M-12)/2;
