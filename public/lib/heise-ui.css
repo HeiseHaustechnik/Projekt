@@ -84,7 +84,7 @@ select.inp{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.
 .hero::before{content:"";position:absolute;right:-90px;top:-110px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.16),rgba(255,255,255,0) 70%)}
 .hero::after,.stripe{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:linear-gradient(90deg,var(--t-heiz) 0 25%,var(--t-luft) 25% 50%,var(--t-san) 50% 75%,var(--accent) 75% 100%)}
 .hero .ey{font-size:13.5px;font-weight:600;opacity:.78;position:relative}
-.hero h1{font-size:clamp(26px,7.4vw,38px);font-weight:790;margin-top:6px;line-height:1.05;position:relative;overflow-wrap:anywhere}
+.hero h1{font-size:clamp(24px,6.6vw,38px);font-weight:790;margin-top:6px;line-height:1.05;position:relative;overflow-wrap:break-word;hyphens:auto}
 .hero p{grid-column:1/-1;position:relative;opacity:.86;font-size:14.5px;margin-top:10px;max-width:42ch}
 .hero .logo-tile{position:relative;background:#fff;border-radius:18px;width:120px;padding:8px 10px;box-shadow:0 14px 28px -14px rgba(0,0,0,.45)}
 .hero .logo-tile img{width:100%;height:auto;display:block}

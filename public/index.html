@@ -85,7 +85,8 @@ async function showListe(){
 async function showProjekt(id){
   const app=$('#app');
   let d, am;
-  try{ [d,am]=await Promise.all([api('projekte/'+id),api('projekte/'+id+'/aufmasse')]); }catch(e){ app.innerHTML=`<div class="err">${esc(e.message)}</div><a class="btn ghost" href="#">Zurück</a>`; return; }
+  let bt=[];
+  try{ [d,am,bt]=await Promise.all([api('projekte/'+id),api('projekte/'+id+'/aufmasse'),api('projekte/'+id+'/bautagebuch').catch(()=>[])]); }catch(e){ app.innerHTML=`<div class="err">${esc(e.message)}</div><a class="btn ghost" href="#">Zurück</a>`; return; }
   const p=d.projekt;
   const nP=d.lv.filter(o=>o.typ==='P').length, nL=d.lv.filter(o=>o.typ==='P'&&o.in_liste).length;
   const offen=am.reduce((a,x)=>a+(x.anz_ungeprueft||0),0);
@@ -94,7 +95,7 @@ async function showProjekt(id){
     <div class="apps">
       <button class="app" style="--g1:#4a5a7a;--g2:#2f3b53" onclick="document.getElementById('amList').scrollIntoView({behavior:'smooth'})">
         ${offen?`<span class="app-n">${offen}</span>`:''}<div class="app-ico">${IC('ruler')}</div><div><b>Aufmaß</b><span>${plural(am.length,'Aufmaß','Aufmaße')} · ${nP} LV-Positionen</span></div></button>
-      <div class="app off" style="--g1:#e8742f;--g2:#c94a03"><div class="app-ico">${IC('book')}</div><div><b>Bautagebuch</b><span>Folgt</span></div></div>
+      <a class="app" href="/bautagebuch/?p=${id}" style="--g1:#e8742f;--g2:#c94a03">${bt.some(x=>x.datum===new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10))?'':'<span class="app-n">!</span>'}<div class="app-ico">${IC('book')}</div><div><b>Bautagebuch</b><span>${plural(bt.length,'Eintrag','Einträge')} · ${bt.length&&bt[0]?'zuletzt '+dDE(bt[0].datum):'noch leer'}</span></div></a>
     </div>
     <div class="sec-title" id="amList">Aufmaße</div>
     ${am.length? am.map(a=>`<div class="row-card" onclick="location.href='/aufmass/?id=${a.id}'">

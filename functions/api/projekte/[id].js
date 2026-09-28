@@ -9,7 +9,7 @@ export async function onRequestGet({ env, params }) {
 // PUT /api/projekte/:id  {nr, name, adresse, status}
 export async function onRequestPut({ env, params, request }) {
   const d = await body(request);
-  await env.DB.prepare('UPDATE projekte SET nr = COALESCE(?, nr), name = COALESCE(?, name), adresse = COALESCE(?, adresse), status = COALESCE(?, status), updated_at = ? WHERE id = ?')
-    .bind(d.nr ?? null, d.name ?? null, d.adresse ?? null, d.status ?? null, now(), params.id).run();
+  await env.DB.prepare('UPDATE projekte SET nr = COALESCE(?, nr), name = COALESCE(?, name), adresse = COALESCE(?, adresse), status = COALESCE(?, status), lat = COALESCE(?, lat), lon = COALESCE(?, lon), updated_at = ? WHERE id = ?')
+    .bind(d.nr ?? null, d.name ?? null, d.adresse ?? null, d.status ?? null, d.lat ?? null, d.lon ?? null, now(), params.id).run();
   return json({ ok: true });
 }
