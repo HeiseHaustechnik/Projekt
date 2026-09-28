@@ -1,1 +1,167 @@
-   <h1>Heise Projekt-Plattform</h1>
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f3a5f">
+<title>Heise Projekte</title>
+<style>
+:root{--bg:#f3f5f8;--card:#fff;--ink:#15202b;--muted:#5b6775;--line:#d9dee5;--pri:#1f3a5f;--acc:#e8f0fa;--ok:#1e7a46;--okbg:#e5f4ea;--warn:#9a5b00;--warnbg:#fff4e0;--del:#b3261e}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+button,input,select{font:inherit}
+header{position:sticky;top:0;z-index:5;background:var(--pri);color:#fff;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top))}
+header h1{margin:0;font-size:18px}
+header .sub{font-size:13px;opacity:.85}
+header a{color:#fff;text-decoration:none}
+main{max-width:900px;margin:0 auto;padding:12px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}
+.card h2{margin:0 0 8px;font-size:16px}
+.item{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin:8px 0;cursor:pointer;text-decoration:none;color:inherit}
+.item:active{background:var(--acc)}
+.item .l{flex:1;min-width:0}
+.item .t{font-weight:650;overflow-wrap:anywhere}
+.item .m{font-size:13px;color:var(--muted)}
+.tag{display:inline-block;border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700;margin:2px 4px 0 0}
+.tag.ok{background:var(--okbg);color:var(--ok)} .tag.warn{background:var(--warnbg);color:var(--warn)} .tag.n{background:var(--acc);color:var(--pri)}
+.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:650;background:var(--pri);color:#fff;cursor:pointer}
+.btn.sec{background:#fff;color:var(--pri);border:1px solid var(--pri)}
+.btn.del{background:#fff;color:var(--del);border:1px solid var(--del)}
+.btn:disabled{opacity:.5}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:10px 0 4px}
+input.f,select.f{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:16px}
+.hint{font-size:13px;color:var(--muted)}
+.err{background:#fdecea;color:var(--del);border-radius:10px;padding:10px 12px;margin:10px 0}
+.empty{color:var(--muted);text-align:center;padding:24px}
+.icon{border:0;background:none;color:var(--muted);font-size:18px;padding:6px 8px;border-radius:8px;cursor:pointer}
+details summary{cursor:pointer;font-weight:650;color:var(--pri)}
+</style>
+</head>
+<body>
+<header><h1 id="ttl">Heise Projekte</h1><div class="sub" id="sub">Aufmaß · Bautagebuch</div></header>
+<main id="app"><div class="empty">Lädt …</div></main>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dDE=d=>d?new Date(d).toLocaleDateString('de-DE'):'';
+async function api(path,opt={}){
+  const r=await fetch('/api/'+path,{...opt,headers:{'content-type':'application/json'},credentials:'same-origin'});
+  const ct=r.headers.get('content-type')||'';
+  if(!ct.includes('json')) throw new Error('Keine Verbindung zur Datenbank (Seite neu laden oder Netz prüfen)');
+  const d=await r.json(); if(!r.ok) throw new Error(d.fehler||('Fehler '+r.status)); return d;
+}
+function route(){ const m=location.hash.match(/^#p=(.+)$/); m? showProjekt(m[1]) : showListe(); }
+window.addEventListener('hashchange',route);
+
+/* ---------- Projektliste ---------- */
+async function showListe(){
+  $('#ttl').textContent='Heise Projekte'; $('#sub').textContent='Aufmaß · Bautagebuch';
+  const app=$('#app');
+  let list=[];
+  try{ list=await api('projekte'); }catch(e){ app.innerHTML=`<div class="err">${esc(e.message)}</div>`; return; }
+  app.innerHTML=`
+    ${list.length? list.map(p=>`<a class="item" href="#p=${p.id}"><div class="l"><div class="m">${esc(p.nr)}</div><div class="t">${esc(p.name)}</div><div class="m">${esc(p.adresse)}</div>
+      <span class="tag n">${p.anz_aufmasse} Aufmaß${p.anz_aufmasse==1?'':'e'}</span><span class="tag n">${p.anz_lv} LV-Positionen</span></div><div>›</div></a>`).join('')
+      :'<div class="empty">Noch keine Projekte angelegt.</div>'}
+    <div class="card"><details><summary>+ Neues Projekt anlegen</summary>
+      <div class="row"><div><label>Projekt-Nr.</label><input class="f" id="np_nr"></div><div><label>Name *</label><input class="f" id="np_name"></div></div>
+      <label>Adresse</label><input class="f" id="np_adr">
+      <p><button class="btn" id="np_ok">Anlegen</button></p>
+      <p class="hint">Das LV wird danach im Projekt aus der Kalkulations-Excel importiert.</p></details></div>
+    <div class="card"><details><summary>Projekt aus Importdatei anlegen (.json)</summary>
+      <p class="hint">Für vorbereitete Projektdateien mit LV, Bereichen und Vorschlägen (zum Beispiel „FTZ_Ebergoetzen_Import.json“).</p>
+      <input type="file" id="imp_f" accept=".json,application/json"><p><button class="btn" id="imp_ok">Importieren</button></p><div id="imp_msg"></div></details></div>`;
+  $('#np_ok').onclick=async()=>{ const name=$('#np_name').value.trim(); if(!name) return alert('Bitte einen Namen eintragen');
+    try{ const r=await api('projekte',{method:'POST',body:JSON.stringify({nr:$('#np_nr').value.trim(),name,adresse:$('#np_adr').value.trim()})}); location.hash='#p='+r.id; }catch(e){ alert(e.message); } };
+  $('#imp_ok').onclick=async()=>{ const f=$('#imp_f').files[0]; if(!f) return alert('Bitte eine Datei wählen');
+    const b=$('#imp_ok'); b.disabled=true; b.textContent='Importiere …';
+    try{ const d=JSON.parse(await f.text()); const r=await api('import',{method:'POST',body:JSON.stringify(d)}); location.hash='#p='+r.projekt_id; }
+    catch(e){ $('#imp_msg').innerHTML=`<div class="err">${esc(e.message)}</div>`; b.disabled=false; b.textContent='Importieren'; } };
+}
+
+/* ---------- Projekt ---------- */
+async function showProjekt(id){
+  const app=$('#app');
+  let d, am;
+  try{ [d,am]=await Promise.all([api('projekte/'+id),api('projekte/'+id+'/aufmasse')]); }catch(e){ app.innerHTML=`<div class="err">${esc(e.message)}</div><a href="#">‹ Zurück</a>`; return; }
+  const p=d.projekt;
+  $('#ttl').innerHTML=`<a href="#">‹</a> ${esc(p.name)}`; $('#sub').textContent=[p.nr,p.adresse].filter(Boolean).join(' · ');
+  const nP=d.lv.filter(o=>o.typ==='P').length, nL=d.lv.filter(o=>o.typ==='P'&&o.in_liste).length;
+  app.innerHTML=`
+    <div class="card"><h2>Aufmaße</h2>
+      ${am.length? am.map(a=>`<div class="item" onclick="location.href='/aufmass/?id=${a.id}'"><div class="l"><div class="t">${esc(a.bez)}</div>
+        <div class="m">${dDE(a.datum)}${a.monteur?' · '+esc(a.monteur):''}</div>
+        <span class="tag n">${a.anz_eintraege} Einträge</span>${a.anz_ungeprueft?`<span class="tag warn">${a.anz_ungeprueft} ungeprüft</span>`:''}${a.unterschrieben?'<span class="tag ok">unterschrieben</span>':''}</div>
+        <button class="icon" title="Löschen" onclick="event.stopPropagation();delAufmass('${a.id}','${esc(a.bez).replace(/'/g,'')}')">🗑</button><div>›</div></div>`).join('')
+        :'<div class="hint">Noch kein Aufmaß angelegt.</div>'}
+      <details style="margin-top:10px"><summary>+ Neues Aufmaß</summary>
+        <label>Bezeichnung *</label><input class="f" id="na_bez" placeholder="z. B. Aufmaß 2 – Trinkwasser OG">
+        <div class="row"><div><label>Datum</label><input class="f" type="date" id="na_dat" value="${new Date().toISOString().slice(0,10)}"></div><div><label>Monteur</label><input class="f" id="na_mon"></div></div>
+        <p><button class="btn" id="na_ok" ${nP?'':'disabled'}>Anlegen und öffnen</button> ${nP?'':'<span class="hint">Zuerst das LV importieren.</span>'}</p>
+      </details>
+    </div>
+    <div class="card"><h2>Leistungsverzeichnis</h2>
+      <p class="hint" style="margin-top:0">${nP? `${nP} Positionen, davon ${nL} in der Aufmaß-Liste.` : 'Noch kein LV importiert.'}</p>
+      <details><summary>LV aus Excel importieren${nP?' (ersetzt das bestehende)':''}</summary>
+        <p class="hint">Erwartet ein Blatt mit den Spalten Typ (Los / Titel / Text-Pos. / Position), Pos.-Nr., Bezeichnung, Menge, ME, wie in der Kalkulation. Ausgeblendete Zeilen landen im „Gesamten LV“, sichtbare in der „Aufmaß-Liste“.</p>
+        <input type="file" id="lv_f" accept=".xlsx"><div id="lv_sheet"></div><div id="lv_msg"></div>
+      </details>
+    </div>
+    <div class="card"><h2>Bautagebuch</h2><p class="hint" style="margin:0">Folgt.</p></div>`;
+  $('#na_ok').onclick=async()=>{ const bez=$('#na_bez').value.trim(); if(!bez) return alert('Bitte eine Bezeichnung eintragen');
+    try{ const r=await api('projekte/'+id+'/aufmasse',{method:'POST',body:JSON.stringify({bez,datum:$('#na_dat').value,monteur:$('#na_mon').value.trim()})}); location.href='/aufmass/?id='+r.id; }catch(e){ alert(e.message); } };
+  $('#lv_f').onchange=()=>lvImport(id);
+}
+async function delAufmass(id,bez){
+  if(!confirm(`Aufmaß „${bez}“ mit allen Einträgen endgültig löschen?`)) return;
+  try{ await api('aufmasse/'+id,{method:'DELETE'}); route(); }catch(e){ alert(e.message); }
+}
+
+/* ---------- LV-Import aus Excel ---------- */
+function loadExcelJS(){ return window.ExcelJS? Promise.resolve() : new Promise((ok,err)=>{ const s=document.createElement('script'); s.src='/lib/exceljs.min.js'; s.onload=ok; s.onerror=()=>err(new Error('ExcelJS konnte nicht geladen werden')); document.head.appendChild(s); }); }
+const cellVal=v=>{ if(v==null) return ''; if(typeof v==='object'){ if('result' in v) return v.result??''; if(v.richText) return v.richText.map(t=>t.text).join(''); if(v.text) return v.text; } return v; };
+async function lvImport(pid){
+  const f=$('#lv_f').files[0]; if(!f) return;
+  $('#lv_msg').innerHTML='<p class="hint">Lese Datei …</p>';
+  try{
+    await loadExcelJS();
+    const wb=new ExcelJS.Workbook(); await wb.xlsx.load(await f.arrayBuffer());
+    const names=wb.worksheets.map(w=>w.name);
+    $('#lv_sheet').innerHTML=`<label>Blatt</label><select class="f" id="lv_ws">${names.map(n=>`<option>${esc(n)}</option>`).join('')}</select>`;
+    const upd=()=>{ try{ const r=parseLV(wb.getWorksheet($('#lv_ws').value)); window._lv=r;
+        $('#lv_msg').innerHTML=`<p>${r.filter(o=>o.typ==='P').length} Positionen erkannt, davon ${r.filter(o=>o.typ==='P'&&o.in_liste).length} sichtbar (Aufmaß-Liste), ${r.filter(o=>o.typ==='T').length} Titel.</p><button class="btn" id="lv_ok">LV übernehmen</button>`;
+        $('#lv_ok').onclick=async()=>{ $('#lv_ok').disabled=true; try{ await api('projekte/'+pid+'/lv',{method:'PUT',body:JSON.stringify(window._lv)}); route(); }catch(e){ alert(e.message); $('#lv_ok').disabled=false; } };
+      }catch(e){ $('#lv_msg').innerHTML=`<div class="err">${esc(e.message)}</div>`; } };
+    $('#lv_ws').onchange=upd;
+    const pref=names.findIndex(n=>/aufma/i.test(n)); if(pref>=0) $('#lv_ws').selectedIndex=pref;
+    upd();
+  }catch(e){ $('#lv_msg').innerHTML=`<div class="err">${esc(e.message)}</div>`; }
+}
+function parseLV(ws){
+  // Kopfzeile suchen
+  let hr=0, col={};
+  for(let r=1;r<=Math.min(20,ws.rowCount);r++){
+    const vals=Array.from(ws.getRow(r).values||[],v=>String(cellVal(v)).trim().toLowerCase());
+    const pi=vals.findIndex(v=>v.startsWith('pos')), bi=vals.findIndex(v=>v.startsWith('bezeichnung'));
+    if(pi>0&&bi>0){ hr=r; col={pos:pi,bez:bi,menge:vals.findIndex(v=>v==='menge'),me:vals.findIndex(v=>v==='me'),typ:1}; break; }
+  }
+  if(!hr) throw new Error('Kopfzeile mit „Pos.-Nr.“ und „Bezeichnung“ nicht gefunden');
+  const out=[]; let started=false;
+  for(let r=hr+1;r<=ws.rowCount;r++){
+    const row=ws.getRow(r); const g=c=>c>0?cellVal(row.getCell(c).value):'';
+    const typ=String(g(col.typ)).trim(), pos=String(g(col.pos)).trim().replace(/\.$/,''), bez=String(g(col.bez)).trim();
+    const vis=!row.hidden;
+    if(typ==='Los'){ started=true; out.push({typ:'L',pos,bez}); }
+    else if(typ==='Titel'){ out.push({typ:'T',pos,bez}); }
+    else if(typ==='Position'){ let me=String(g(col.me)).trim(); if(/^st/i.test(me)) me='Stck'; if(me==='M') me='m';
+      out.push({typ:'P',pos,bez:bez.split('\n')[0],menge:Number(g(col.menge))||0,me,in_liste:vis?1:0}); }
+    else if(/^text/i.test(typ) && started){ const first=bez.split('\n')[0].trim(); if(first && first.length<=70) out.push({typ:'X',bez:first}); }
+  }
+  if(!out.some(o=>o.typ==='P')) throw new Error('Keine Positionen gefunden (Spalte A muss „Position“ enthalten)');
+  return out;
+}
+route();
+</script>
+</body>
+</html>
