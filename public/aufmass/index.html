@@ -3,135 +3,135 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1f3a5f">
+<meta name="theme-color" content="#ffffff">
 <title>Aufmaß</title>
+<link rel="stylesheet" href="/lib/heise-ui.css">
 <style>
-:root{
-  --bg:#f3f5f8; --card:#fff; --ink:#15202b; --muted:#5b6775; --line:#d9dee5;
-  --pri:#1f3a5f; --pri2:#2d5588; --acc:#e8f0fa; --ok:#1e7a46; --okbg:#e5f4ea;
-  --warn:#9a5b00; --warnbg:#fff4e0; --del:#b3261e;
-}
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%}
-button,input,textarea,select{font:inherit}
-header{position:sticky;top:0;z-index:20;background:var(--pri);color:#fff;padding:10px 16px calc(10px) ;padding-top:max(10px,env(safe-area-inset-top))}
-header h1{margin:0;font-size:17px;font-weight:650}
-header .sub{font-size:13px;opacity:.85}
-header .save{float:right;font-size:12px;opacity:.8;margin-top:3px}
-main{max-width:900px;margin:0 auto;padding:12px 16px 110px}
-nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;background:#fff;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-nav.tabs button{flex:1;border:0;background:none;padding:10px 4px 12px;font-size:14px;color:var(--muted);font-weight:600}
-nav.tabs button.on{color:var(--pri);box-shadow:inset 0 3px 0 var(--pri)}
-nav.tabs .cnt{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:var(--pri);color:#fff;font-size:12px;margin-left:4px}
-.view{display:none}.view.on{display:block}
-.toolbar{position:sticky;top:58px;z-index:10;background:var(--bg);padding:6px 0 8px}
-.search{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:16px}
-.seg{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-.chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 12px;font-size:14px;color:var(--ink)}
-.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
-.btn{border:0;border-radius:10px;padding:12px 16px;font-weight:650;background:var(--pri);color:#fff;cursor:pointer}
-.btn.sec{background:#fff;color:var(--pri);border:1px solid var(--pri)}
-.btn.ghost{background:none;color:var(--pri);padding:8px 10px}
-.btn.del{background:#fff;color:var(--del);border:1px solid var(--del)}
-.btn.block{display:block;width:100%}
-.btn:disabled{opacity:.45}
-.grp{display:flex;align-items:center;gap:6px;width:100%;text-align:left;margin:8px 0 4px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--acc);font-weight:700;color:var(--pri);font-size:15px;cursor:pointer}
-.grp .n{color:var(--muted);font-weight:600;align-self:flex-start}
-.grp .arr{align-self:flex-start}
-.grp .tt{flex:1;min-width:0}
-.grp .gc{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:2px}
-.grp .gc b{color:var(--ok)}
-.grp .arr{display:inline-block;transition:transform .15s;color:var(--muted)}
+/* Aufmaß-App – seitenspezifisch; Grundlagen in /lib/heise-ui.css */
+:root{--pri:var(--brand);--muted:var(--ink-2);--card:var(--surface);--acc:var(--surface-2);--or:var(--accent);--or2:var(--accent-2);--warn:var(--amber);--warnbg:var(--amber-bg);--okbg:var(--ok-bg);--del:var(--red)}
+header.topbar .sync{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:650;color:var(--ink-3);max-width:40%;text-align:right;line-height:1.25}
+header.topbar .sync .ic{width:16px;height:16px}
+main{max-width:900px;margin:0 auto;padding:4px 16px calc(110px + var(--safe-b))}
+.view{display:none}.view.on{display:block;animation:fade .2s}
+.toolbar{position:sticky;top:calc(64px + var(--safe-t));z-index:10;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:6px 0 10px;margin:0 -16px;padding-left:16px;padding-right:16px}
+.searchbox{position:relative}
+.searchbox .ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink-3)}
+.search{width:100%;min-height:48px;padding:0 14px 0 42px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);font-size:16px;outline:none}
+.search:focus{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;background:var(--surface-2);border-radius:15px;margin-top:10px}
+.seg .chip{min-height:40px;padding:4px 4px;border-radius:12px;font-weight:660;font-size:12.5px;color:var(--ink-2);line-height:1.15}
+.seg .chip.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(13,21,36,.16)}
+.tbar2{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
+.tbar2 .lnk{color:var(--brand-2);font-weight:650;font-size:13.5px;padding:6px 4px}
+.btn-free{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border-radius:12px;background:var(--amber-bg);color:var(--accent-2);font-weight:700;font-size:14px}
+.los{margin:22px 6px 8px;font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.grp{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;margin:10px 0 6px;padding:14px 16px;border-radius:18px;background:var(--surface);box-shadow:var(--shadow);font-weight:720;color:var(--ink);font-size:15px}
+.grp .arr{display:grid;place-items:center;width:26px;height:26px;border-radius:9px;background:var(--surface-2);color:var(--ink-2);transition:transform .2s;flex:0 0 auto}
 .grp.open .arr{transform:rotate(90deg)}
-.los{margin:18px 0 4px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
-.sgrp{margin:10px 0 4px;font-size:13px;color:var(--muted);font-weight:600}
-.pos{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:6px 0;cursor:pointer}
-.pos:active{background:var(--acc)}
+.grp .arr .ic{width:15px;height:15px}
+.grp .n{color:var(--ink-3);font-weight:680;font-variant-numeric:tabular-nums;padding-top:2px}
+.grp .tt{flex:1;min-width:0;padding-top:2px}
+.grp .gc{display:block;font-size:12.5px;color:var(--ink-3);font-weight:600;margin-top:3px}
+.grp .gc b{color:var(--ok)}
+.sgrp{margin:12px 8px 6px;font-size:12.5px;color:var(--ink-3);font-weight:680}
+.pos{display:flex;gap:12px;align-items:center;background:var(--surface);border-radius:16px;padding:12px 14px;margin:6px 0;cursor:pointer;box-shadow:inset 0 0 0 1.5px var(--line);transition:transform .12s}
+.pos:active{transform:scale(.99);background:var(--surface-2)}
 .pos .l{flex:1;min-width:0}
-.pos .nr{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-.pos .bz{font-weight:560;overflow-wrap:anywhere}
-.pos .r{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
-.pos .lv{font-size:12px;color:var(--muted)}
-.badge{display:inline-block;background:var(--okbg);color:var(--ok);border-radius:8px;padding:2px 8px;font-weight:700;font-size:14px}
-.badge.over{background:var(--warnbg);color:var(--warn)}
-.pos.free{border-style:dashed}
-.empty{color:var(--muted);text-align:center;padding:30px 10px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}
-.card h2{margin:0 0 10px;font-size:16px}
-label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:10px 0 4px}
-input.f,textarea.f,select.f{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:16px}
-textarea.f{min-height:60px;resize:vertical}
+.pos .nr{font-size:12px;color:var(--ink-3);font-weight:600;font-variant-numeric:tabular-nums}
+.pos .bz{font-weight:650;overflow-wrap:anywhere;margin-top:1px}
+.pos .r{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;display:grid;justify-items:end;gap:4px}
+.pos .lv{font-size:12px;color:var(--ink-3)}
+.badge{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:13px;background:var(--ok-bg);color:var(--ok);font-weight:750;font-size:13px}
+.badge.over{background:var(--amber-bg);color:var(--amber)}
+.pos.free{box-shadow:inset 0 0 0 1.5px var(--line);border:1.5px dashed var(--ink-3)}
+.empty{margin-top:14px}
+.card h2{font-size:17px;font-weight:760;margin-bottom:12px}
+label{display:block;margin:12px 0 6px}
+input.f,textarea.f,select.f{width:100%;min-height:50px;padding:0 14px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);outline:none;font-size:16px;-webkit-appearance:none;appearance:none}
+textarea.f{min-height:80px;padding:12px 14px;resize:vertical}
+input.f:focus,textarea.f:focus,select.f:focus{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+input.f[readonly]{background:var(--surface-2);color:var(--ink-2)}
 .row{display:flex;gap:10px}.row>*{flex:1;min-width:0}
-.ent{border-top:1px solid var(--line);padding:8px 0;display:flex;gap:8px;align-items:flex-start}
+.ent{border-top:1px solid var(--line);padding:10px 0;display:flex;gap:10px;align-items:flex-start}
 .ent:first-child{border-top:0}
-.ent .q{font-weight:700;min-width:84px;font-variant-numeric:tabular-nums}
-.ent .o{flex:1;min-width:0;overflow-wrap:anywhere}
-.ent .o small{display:block;color:var(--muted)}
-.ent .x{display:flex;gap:2px}
-.icon{border:0;background:none;padding:6px 8px;border-radius:8px;color:var(--muted);font-size:15px;cursor:pointer}
-.icon:active{background:var(--acc)}
-.src{display:block;font-size:12px;color:var(--muted)}
-.src.pre{color:var(--warn);font-weight:600}
-.icon.ok{color:var(--ok);font-weight:800;font-size:18px}
-.sum{display:flex;justify-content:space-between;align-items:center;font-weight:700;padding-top:8px;border-top:2px solid var(--ink);margin-top:4px}
-/* sheet */
-.ov{position:fixed;inset:0;background:rgba(10,20,30,.45);z-index:50;display:none}
-.ov.on{display:block}
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-radius:16px 16px 0 0;max-height:92vh;overflow:auto;padding:16px 16px calc(20px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .2s ease;max-width:900px;margin:0 auto}
+.ent .q{font-weight:750;min-width:78px;font-variant-numeric:tabular-nums;padding-top:6px}
+.ent .o{flex:1;min-width:0;overflow-wrap:anywhere;padding-top:6px}
+.ent .o small{display:block;color:var(--ink-2);font-size:13px}
+.ent .x{display:flex;gap:4px}
+.icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:var(--ink-2);background:var(--surface-2)}
+.icon:active{transform:scale(.95)}
+.icon.ok{background:var(--ok-bg);color:var(--ok)}
+.icon .ic{width:18px;height:18px}
+.sum{display:flex;justify-content:space-between;align-items:center;font-weight:760;padding-top:10px;border-top:2px solid var(--ink);margin-top:4px}
+.ov{position:fixed;inset:0;background:rgba(8,13,21,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:50;display:none}
+.ov.on{display:block;animation:fade .2s}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--bg);border-radius:28px 28px 0 0;max-height:93dvh;overflow:auto;padding:22px 20px calc(20px + var(--safe-b));transform:translateY(105%);transition:transform .28s cubic-bezier(.2,.9,.3,1);max-width:640px;margin:0 auto;box-shadow:0 -24px 70px -20px rgba(0,0,0,.5)}
+.sheet::before{content:"";position:absolute;top:9px;left:50%;width:40px;height:5px;border-radius:3px;background:var(--line);transform:translateX(-50%)}
 .sheet.on{transform:none}
-.sheet .hd{display:flex;gap:10px;align-items:flex-start}
-.sheet .hd .t{flex:1}
-.sheet .nr{font-size:13px;color:var(--muted)}
-.sheet h3{margin:2px 0 4px;font-size:17px;overflow-wrap:anywhere}
-.calc{font-size:13px;color:var(--ok);min-height:18px;margin-top:3px}
-.calc.err{color:var(--del)}
-.qwrap{display:flex;align-items:center;gap:8px}
+@media(min-width:720px){.sheet{bottom:auto;top:50%;border-radius:28px;transform:translateY(-40%) scale(.98);opacity:0;pointer-events:none;transition:.2s}.sheet.on{transform:translateY(-50%);opacity:1;pointer-events:auto}.sheet::before{display:none}}
+.sheet .hd{display:flex;gap:12px;align-items:flex-start;margin-bottom:6px}
+.sheet .hd .t{flex:1;min-width:0}
+.sheet .nr{font-size:12.5px;color:var(--ink-3);font-weight:600}
+.sheet h3{margin:4px 0 2px;font-size:19px;font-weight:760;overflow-wrap:anywhere}
+.sheet .card{box-shadow:none;border:1.5px solid var(--line)}
+.calc{font-size:13px;color:var(--ok);min-height:18px;margin-top:4px;font-weight:600}
+.calc.err{color:var(--red)}
+.qwrap{display:flex;align-items:center;gap:10px}
 .qwrap input{flex:1}
-.qwrap .me{font-weight:700;color:var(--muted);min-width:36px}
-.stepper{display:flex;gap:6px;margin-top:6px}
-.stepper button{flex:1;padding:8px 0;border:1px solid var(--line);background:#fff;border-radius:8px;font-weight:600}
-.pick{border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px;background:#fafbfc;max-height:46vh;overflow:auto}
-.pick .pg{font-size:12px;font-weight:700;color:var(--muted);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.03em}
-.pi{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px 12px;margin:4px 0;font-size:15px;cursor:pointer}
-.pi.u{border-color:var(--ok);background:var(--okbg)}
-.pi:active{background:var(--acc)}
-.al{display:flex;align-items:center;gap:6px;border-top:1px solid var(--line);padding:4px 0}
-.al:first-child{border-top:0}
-.al span{flex:1;min-width:0;overflow-wrap:anywhere;font-size:14px}
-details.ag{border:1px solid var(--line);border-radius:10px;padding:6px 10px;margin:6px 0;background:#fff}
-details.ag summary{font-weight:650;cursor:pointer;padding:4px 0}
-.sig{border:1.5px dashed var(--muted);border-radius:10px;background:#fcfcfd;touch-action:none;width:100%;height:170px;display:block}
-.sigbar{display:flex;justify-content:space-between;align-items:center;margin-top:4px;font-size:13px;color:var(--muted)}
-.note{background:var(--warnbg);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:14px;margin:10px 0}
-.stat{display:flex;gap:10px;flex-wrap:wrap}
-.stat div{flex:1;min-width:120px;background:var(--acc);border-radius:10px;padding:10px 12px}
-.stat b{display:block;font-size:22px;color:var(--pri)}
+.qwrap .me{font-weight:750;color:var(--ink-2);min-width:36px}
+.stepper{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.stepper button{min-height:40px;border-radius:12px;background:var(--surface-2);font-weight:700}
+.stepper button:active{transform:scale(.96)}
+.sig{border:1.5px dashed var(--ink-3);border-radius:16px;background:var(--surface);touch-action:none;width:100%;height:170px;display:block}
+.sigbar{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:13px;color:var(--ink-3)}
+.note{background:var(--amber-bg);color:var(--amber);border-radius:16px;padding:12px 14px;font-size:14px;margin:0 0 12px;font-weight:600}
+button.note{display:flex;gap:10px;align-items:center;width:100%;text-align:left;margin:6px 0 4px}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat>div{background:var(--surface);border-radius:18px;padding:12px 14px;box-shadow:var(--shadow);font-size:12.5px;color:var(--ink-2);font-weight:600}
+.stat b{display:block;font-size:24px;color:var(--ink);font-weight:780;font-variant-numeric:tabular-nums}
+.stat .warn{grid-column:1/-1;background:var(--amber-bg);color:var(--amber);box-shadow:none}
+.stat .warn b{color:var(--amber)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:560px){.grid2{grid-template-columns:1fr}}
-.toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#15202b;color:#fff;padding:10px 16px;border-radius:10px;z-index:90;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}
-.toast.on{opacity:1}
-.hint{font-size:13px;color:var(--muted)}
+.src{display:block;font-size:12px;color:var(--ink-3)}
+.src.pre{color:var(--amber);font-weight:680}
+.pick{border-radius:16px;padding:10px;margin-top:10px;background:var(--surface-2);max-height:46vh;overflow:auto}
+.pick .pg{font-size:11.5px;font-weight:700;color:var(--ink-3);margin:12px 4px 6px;text-transform:uppercase;letter-spacing:.06em}
+.pi{display:block;width:100%;text-align:left;background:var(--surface);border-radius:12px;padding:11px 12px;margin:5px 0;font-size:15px;box-shadow:inset 0 0 0 1.5px var(--line)}
+.pi.u{box-shadow:inset 0 0 0 2px var(--ok);background:var(--ok-bg)}
+.al{display:flex;align-items:center;gap:6px;border-top:1px solid var(--line);padding:6px 0}
+.al:first-of-type{border-top:0}
+.al span{flex:1;min-width:0;overflow-wrap:anywhere;font-size:14px}
+details.ag{border-radius:16px;padding:4px 12px;margin:8px 0;background:var(--surface-2)}
+details.ag summary{font-weight:700;cursor:pointer;padding:10px 0}
+nav.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + var(--safe-b));z-index:40;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:5px;width:min(460px,calc(100% - 24px));background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:22px;box-shadow:0 10px 34px -10px rgba(13,21,36,.35),0 0 0 1px var(--line)}
+nav.tabs button{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:54px;justify-content:center;border-radius:17px;font-size:12px;font-weight:680;color:var(--ink-3);position:relative}
+nav.tabs button .ic{width:22px;height:22px}
+nav.tabs button.on{background:var(--brand);color:#fff}
+nav.tabs .cnt{position:absolute;top:5px;right:calc(50% - 26px);min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+.hint{font-size:13px;color:var(--ink-3);margin-top:8px}
 </style>
+
 </head>
 <body>
-<header>
-  <span class="save" id="saveState"></span>
-  <h1><a href="/" style="color:#fff;text-decoration:none">‹</a> <span id="hdrTitle">Aufmaß</span></h1>
-  <div class="sub" id="hdrSub">Aufmaß 1 · NT 1 + Regenwasser</div>
+<header class="topbar">
+  <a href="/" class="iconbtn" id="backBtn" aria-label="Zur Projektübersicht"></a>
+  <div class="brand"><div class="lt"><img src="/lib/heise-logo.svg" alt="Heise Haustechnik"></div><div style="min-width:0"><b id="hdrTitle">Aufmaß</b><small id="hdrSub"></small></div></div>
+  <span class="sync" id="saveState"></span>
 </header>
 
 <main>
   <!-- POSITIONEN -->
   <section class="view on" id="v-pos">
     <div class="toolbar">
-      <input class="search" id="q" type="search" placeholder="Optional suchen, z. B. DN 100 Bogen" autocomplete="off">
+      <div class="searchbox"><span id="icSearch"></span><input class="search" id="q" type="search" placeholder="Suchen, z. B. DN 100 Bogen" autocomplete="off"></div>
       <div class="seg">
-        <button class="chip on" data-f="list">Aufmaß-Liste (94)</button>
-        <button class="chip" data-f="all">Gesamtes LV (543)</button>
-        <button class="chip" data-f="done">Nur erfasste</button>
-        <button class="chip" data-f="pre">Vorschläge prüfen</button>
-        <button class="chip" id="btnFree" style="margin-left:auto;border-color:var(--pri);color:var(--pri);font-weight:650">+ Freie Position</button>
+        <button class="chip on" data-f="list">Aufmaß-Liste</button>
+        <button class="chip" data-f="all">Gesamtes LV</button>
+        <button class="chip" data-f="done">Erfasste</button>
+        <button class="chip" data-f="pre">Vorschläge</button>
       </div>
+      <div class="tbar2"><span id="grpTools"></span><button class="btn-free" id="btnFree"></button></div>
     </div>
     <div id="preBanner"></div>
     <div id="posList"></div>
@@ -212,20 +212,25 @@ details.ag summary{font-weight:650;cursor:pointer;padding:4px 0}
 </main>
 
 <nav class="tabs">
-  <button class="on" data-v="v-pos">Positionen</button>
-  <button data-v="v-sum">Erfasst<span class="cnt" id="cntTab">0</span></button>
-  <button data-v="v-end">Abschluss</button>
+  <button class="on" data-v="v-pos"><span data-ic="list"></span>Positionen</button>
+  <button data-v="v-sum"><span data-ic="ruler"></span>Erfasst<span class="cnt" id="cntTab">0</span></button>
+  <button data-v="v-end"><span data-ic="clip"></span>Abschluss</button>
 </nav>
 
 <div class="ov" id="ov"></div>
 <div class="sheet" id="sheet"></div>
 <div class="toast" id="toast"></div>
 
+<script src="/lib/heise-icons.js"></script>
 <script src="/lib/exceljs.min.js"></script>
 <script src="/lib/jspdf.umd.min.js"></script>
 <script src="/lib/jspdf.plugin.autotable.min.js"></script>
 <script>
 let LV = [];
+document.querySelectorAll('[data-ic]').forEach(e=>e.outerHTML=IC(e.dataset.ic));
+document.getElementById('backBtn').innerHTML=IC('back');
+document.getElementById('icSearch').outerHTML=IC('search');
+document.getElementById('btnFree').innerHTML=IC('plus','sm')+'Freie Position';
 const FIRMA = 'Heise Haustechnik GmbH & Co. KG · Braunlage';
 const AID = new URLSearchParams(location.search).get('id');
 const KEY = 'aufmass_'+AID;
@@ -302,7 +307,7 @@ function posRow(p,free){
 }
 function renderPreBanner(){
   const np=S.entries.filter(e=>e.pre).length;
-  $('#preBanner').innerHTML=np?`<button class="note" style="display:block;width:100%;text-align:left;border:0;cursor:pointer" onclick="showPre()"><b>${np} Vorschläge aus Rechnungen</b> warten auf Prüfung. Hier tippen, um sie anzuzeigen.</button>`:'';
+  $('#preBanner').innerHTML=np?`<button class="note" onclick="showPre()">${IC('receipt')}<span><b>${np} Vorschläge aus Rechnungen</b> warten auf Prüfung. Hier tippen, um sie anzuzeigen.</span></button>`:'';
 }
 function showPre(){ S.filter='pre'; $('#q').value=''; save(); renderPos(); window.scrollTo(0,0); }
 function renderPos(){
@@ -336,15 +341,12 @@ function renderPos(){
   const O=S.open[S.filter]||(S.open[S.filter]={});
   const defOpen = S.filter!=='all';
   let html='', n=0;
-  if(!q){
-    html+=`<div style="display:flex;justify-content:flex-end;gap:4px;margin:-4px 0 2px">
-      <button class="btn ghost" onclick="toggleAll(true)">Alle aufklappen</button><button class="btn ghost" onclick="toggleAll(false)">Alle zuklappen</button></div>`;
-  }
+  $('#grpTools').innerHTML = q? '' : `<button class="lnk" onclick="toggleAll(true)">Alle auf</button><button class="lnk" onclick="toggleAll(false)">Alle zu</button>`;
   for(const G of groups){
     if(!G.n) continue;
     if(G.los) html+=`<div class="los">Los ${esc(G.los.p)} · ${esc(G.los.b)}</div>`;
     const open = q ? true : (O[G.t.p]!==undefined ? O[G.t.p] : defOpen);
-    html+=`<button class="grp${open?' open':''}" data-t="${esc(G.t.p)}"><span class="arr">▸</span><span class="n">${esc(G.t.p)}</span><span class="tt">${esc(G.t.b)}<span class="gc">${G.n} Positionen${G.d?` · <b>${G.d} erfasst</b>`:''}</span></span></button>`;
+    html+=`<button class="grp${open?' open':''}" data-t="${esc(G.t.p)}"><span class="arr">${IC('chev')}</span><span class="n">${esc(G.t.p)}</span><span class="tt">${esc(G.t.b)}<span class="gc">${G.n} Positionen${G.d?` · <b>${G.d} erfasst</b>`:''}</span></span></button>`;
     if(open){
       let pendX=null;
       for(const it of G.items){
@@ -383,7 +385,7 @@ function openPos(key, eid){
   const s=sumOf(key);
   $('#sheet').innerHTML=`
     <div class="hd"><div class="t"><div class="nr">${esc(p.p)}${free?' · freie Position'+(p.t?' · Zuordnung '+esc(titelOf(p.p)):' · ohne Zuordnung'):` · LV-Menge ${nf(p.m)} ${esc(p.me)}`}</div><h3>${esc(p.b)}</h3></div>
-      <button class="icon" onclick="closeSheet()" aria-label="Schließen" style="font-size:22px">✕</button></div>
+      <button class="icon" onclick="closeSheet()" aria-label="Schließen">${IC('x')}</button></div>
     ${free?`<div style="text-align:right"><button class="btn ghost" onclick="openFree(null,'${esc(p.p)}')">Position bearbeiten</button></div>`:''}
     <div class="card" style="margin-top:8px">
       <label for="e_q">Menge${ed?' (bearbeiten)':''}</label>
@@ -397,14 +399,14 @@ function openPos(key, eid){
       <input class="f" id="e_b" autocomplete="off" placeholder="optional" value="${esc(ed?ed.bem:'')}">
       <div class="row" style="margin-top:12px">
         ${ed?`<button class="btn sec" onclick="openPos('${esc(key)}')">Abbrechen</button>`:''}
-        <button class="btn" id="e_add">${ed?'Änderung speichern':'Aufmaß hinzufügen'}</button>
+        <button class="btn cta" id="e_add">${ed?'Änderung speichern':'Aufmaß hinzufügen'}</button>
       </div>
     </div>
     <div class="card">
       <h2 style="margin-bottom:4px">Bisher erfasst (${ents.length})</h2>
       ${ents.length? ents.map(e=>`<div class="ent"><div class="q">${nf(e.qty)} ${esc(p.me)}</div>
         <div class="o">${esc(e.ort)||'<span class="hint">ohne Ort</span>'}${e.bem?`<small>${esc(e.bem)}</small>`:''}${entSrc(e)}</div>
-        <div class="x">${e.pre?`<button class="icon ok" onclick="okEnt('${e.id}')" aria-label="Menge bestätigen">✓</button>`:''}<button class="icon" onclick="openPos('${esc(key)}','${e.id}')" aria-label="Bearbeiten">✎</button><button class="icon" onclick="delEnt('${e.id}')" aria-label="Löschen">🗑</button></div></div>`).join('')
+        <div class="x">${e.pre?`<button class="icon ok" onclick="okEnt('${e.id}')" aria-label="Menge bestätigen">${IC('check')}</button>`:''}<button class="icon" onclick="openPos('${esc(key)}','${e.id}')" aria-label="Bearbeiten">${IC('edit')}</button><button class="icon" onclick="delEnt('${e.id}')" aria-label="Löschen">${IC('trash')}</button></div></div>`).join('')
         + `<div class="sum"><span>Summe</span><span>${nf(s)} ${esc(p.me)}</span></div>`
         : '<div class="hint">Noch nichts erfasst.</div>'}
     </div>`;
@@ -468,7 +470,7 @@ function openFree(prefill, editKey){
   const mes=['Stck','m','m²','m³','kg','h','psch','Wo'];
   $('#sheet').innerHTML=`
     <div class="hd"><div class="t"><div class="nr">${f?esc(f.p):'Neue freie Position'}</div><h3>${f?'Position bearbeiten':'Position, die nicht im LV steht'}</h3></div>
-    <button class="icon" onclick="closeSheet()" style="font-size:22px">✕</button></div>
+    <button class="icon" onclick="closeSheet()" aria-label="Schließen">${IC('x')}</button></div>
     <div class="card">
       <label for="f_b">Bezeichnung *</label>
       <input class="f" id="f_b" value="${esc(f?f.b:(prefill||''))}" placeholder="z. B. Brandschutzmanschette DN 100">
@@ -482,7 +484,7 @@ function openFree(prefill, editKey){
         ${LV.filter(o=>o.k==='T').map(o=>`<option value="${esc(o.p)}" ${f&&f.t===o.p?'selected':(!f&&S.lastT===o.p?'selected':'')}>${esc(o.p)} ${esc(o.b)}</option>`).join('')}</select>
       <div class="row" style="margin-top:12px">
         ${f?`<button class="btn del" id="f_del">Löschen</button>`:''}
-        <button class="btn" id="f_ok">${f?'Speichern':'Anlegen und aufmessen'}</button>
+        <button class="btn cta" id="f_ok">${f?'Speichern':'Anlegen und aufmessen'}</button>
       </div>
     </div>`;
   $('#ov').classList.add('on'); $('#sheet').classList.add('on');
@@ -510,13 +512,13 @@ function renderSum(){
   $('#cntTab').textContent=g.length;
   const np=S.entries.filter(e=>e.pre).length;
   $('#statBox').innerHTML=`<div><b>${g.length}</b>Positionen</div><div><b>${S.entries.length}</b>Einzelaufmaße</div><div><b>${S.free.length}</b>freie Positionen</div>`+
-    (np?`<div style="flex-basis:100%;background:var(--warnbg);color:var(--warn)"><b style="color:var(--warn)">${np}</b>Vorschläge aus Rechnungen noch nicht geprüft. Menge vor Ort kontrollieren, dann mit ✓ bestätigen oder mit ✎ anpassen.</div>`:'');
+    (np?`<div class="warn"><b>${np}</b>Vorschläge aus Rechnungen noch nicht geprüft. Menge vor Ort kontrollieren, dann mit Haken bestätigen oder mit Stift anpassen.</div>`:'');
   if(!g.length){ $('#sumList').innerHTML='<div class="empty">Noch nichts erfasst. Unter „Positionen“ eine Position antippen und Menge eintragen.</div>'; return; }
   $('#sumList').innerHTML=g.map(x=>`<div class="card">
     <div style="display:flex;gap:10px;cursor:pointer" onclick="openPos('${esc(x.p.p)}')"><div style="flex:1;min-width:0"><div class="hint">${esc(x.p.p)}${x.free?' · freie Position · '+(x.p.t?'Zuordnung '+esc(titelOf(x.p.p)):'ohne Zuordnung'):` · LV ${nf(x.p.m)} ${esc(x.p.me)}`}</div><b style="overflow-wrap:anywhere">${esc(x.p.b)}</b></div>
     <div><span class="badge${!x.free&&x.p.m>0&&x.sum>x.p.m?' over':''}">${nf(x.sum)} ${esc(x.p.me)}</span></div></div>
     <div style="margin-top:6px">${x.ents.map(e=>`<div class="ent"><div class="q">${nf(e.qty)}</div><div class="o">${esc(e.ort)||'<span class="hint">ohne Ort</span>'}${e.bem?`<small>${esc(e.bem)}</small>`:''}${entSrc(e)}</div>
-      <div class="x">${e.pre?`<button class="icon ok" onclick="okEnt('${e.id}')">✓</button>`:''}<button class="icon" onclick="openPos('${esc(x.p.p)}','${e.id}')">✎</button><button class="icon" onclick="delEnt('${e.id}')">🗑</button></div></div>`).join('')}</div></div>`).join('');
+      <div class="x">${e.pre?`<button class="icon ok" onclick="okEnt('${e.id}')" aria-label="Menge bestätigen">${IC('check')}</button>`:''}<button class="icon" onclick="openPos('${esc(x.p.p)}','${e.id}')" aria-label="Bearbeiten">${IC('edit')}</button><button class="icon" onclick="delEnt('${e.id}')" aria-label="Löschen">${IC('trash')}</button></div></div>`).join('')}</div></div>`).join('');
 }
 
 /* ---------- Kopfdaten ---------- */
@@ -566,16 +568,23 @@ function checkReady(){
 const dDE=d=>d?new Date(d).toLocaleDateString('de-DE'):'';
 const tsDE=d=>d?new Date(d).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short'}):'';
 
+let LOGO=null;
+async function logoData(){ if(LOGO) return LOGO;
+  try{ const b=await (await fetch('/lib/heise-logo.png')).blob(); LOGO=await new Promise(r=>{ const fr=new FileReader(); fr.onload=()=>r(fr.result); fr.readAsDataURL(b); }); }catch(e){ LOGO=''; }
+  return LOGO; }
 async function makePdf(){
   const { jsPDF } = window.jspdf;
   const doc=new jsPDF({unit:'mm',format:'a4'}); const W=210, M=14;
   const g=groups();
-  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.text('Aufmaß',M,18);
-  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(90); doc.text(FIRMA,W-M,18,{align:'right'}); doc.setTextColor(0);
-  doc.autoTable({startY:23,theme:'plain',styles:{fontSize:9.5,cellPadding:1.2},columnStyles:{0:{fontStyle:'bold',cellWidth:42}},margin:{left:M,right:M},
+  const lg=await logoData();
+  if(lg) doc.addImage(lg,'PNG',W-M-38,6,38,38*91.014/200);
+  doc.setTextColor(47,59,83); doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.text('Aufmaß',M,17);
+  doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(100); doc.text('Heise Haustechnik GmbH & Co. KG · Ramsenweg 2c · 38700 Braunlage',M,22); doc.setTextColor(58,58,58);
+  doc.setDrawColor(226,83,4); doc.setLineWidth(0.8); doc.line(M,27,W-M,27); doc.setLineWidth(0.2);
+  doc.autoTable({startY:30,theme:'plain',styles:{fontSize:9.5,cellPadding:1.2},columnStyles:{0:{fontStyle:'bold',cellWidth:42}},margin:{left:M,right:M},
     body:[['Bauvorhaben',S.head.bv],['Aufmaß',S.head.bez],['Datum',dDE(S.head.dat)],['Aufgemessen von',S.head.mon],['Für AG / Bauleitung',S.head.ag]].concat(S.head.bem?[['Bemerkung',S.head.bem]]:[])});
-  const hs={fillColor:[31,58,95],textColor:255,fontStyle:'bold',fontSize:9};
-  doc.setFont('helvetica','bold'); doc.setFontSize(11.5); doc.text('1. Zusammenstellung je Position',M,doc.lastAutoTable.finalY+8);
+  const hs={fillColor:[47,59,83],textColor:255,fontStyle:'bold',fontSize:9};
+  doc.setTextColor(47,59,83); doc.setFont('helvetica','bold'); doc.setFontSize(11.5); doc.text('1. Zusammenstellung je Position',M,doc.lastAutoTable.finalY+8);
   doc.autoTable({startY:doc.lastAutoTable.finalY+10,margin:{left:M,right:M},headStyles:hs,styles:{fontSize:8.5,cellPadding:1.6,valign:'top'},
     head:[['Pos.-Nr.','Bezeichnung','LV-Menge','Aufmaß','ME']],
     columnStyles:{0:{cellWidth:24},2:{halign:'right',cellWidth:20},3:{halign:'right',cellWidth:20,fontStyle:'bold'},4:{cellWidth:12}},
@@ -587,7 +596,7 @@ async function makePdf(){
   doc.autoTable({startY:y+2,margin:{left:M,right:M},headStyles:hs,styles:{fontSize:8,cellPadding:1.4,valign:'top'},
     head:[['Pos.-Nr.','Bezeichnung','Menge','ME','Raum / Ort','Bemerkung']],
     columnStyles:{0:{cellWidth:22},1:{cellWidth:52},2:{halign:'right',cellWidth:16},3:{cellWidth:11},4:{cellWidth:38}},
-    body,didParseCell:d=>{ if(d.section==='body' && String(d.row.raw[0]?.content||'').startsWith('Summe')) d.cell.styles.fillColor=[232,240,250]; }});
+    body,didParseCell:d=>{ if(d.section==='body' && String(d.row.raw[0]?.content||'').startsWith('Summe')) d.cell.styles.fillColor=[244,245,247]; }});
   y=doc.lastAutoTable.finalY+10; if(y>235){doc.addPage();y=24;}
   doc.setFont('helvetica','bold'); doc.setFontSize(11.5); doc.text('3. Bestätigung',M,y);
   doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.text('Das vorstehende Aufmaß wurde gemeinsam vor Ort festgestellt.',M,y+5);
@@ -610,7 +619,7 @@ function imgSize(src){ return new Promise(r=>{ const i=new Image(); i.onload=()=
 async function makeXlsx(){
   const wb=new ExcelJS.Workbook(); wb.creator='Aufmaß-App Heise Haustechnik';
   const g=groups();
-  const hdrFill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1F3A5F'}};
+  const hdrFill={type:'pattern',pattern:'solid',fgColor:{argb:'FF2F3B53'}};
   const bd={top:{style:'thin',color:{argb:'FFBFC7D1'}},bottom:{style:'thin',color:{argb:'FFBFC7D1'}},left:{style:'thin',color:{argb:'FFBFC7D1'}},right:{style:'thin',color:{argb:'FFBFC7D1'}}};
   const styleHead=r=>{ r.eachCell(c=>{c.fill=hdrFill;c.font={bold:true,color:{argb:'FFFFFFFF'}};c.alignment={vertical:'middle',wrapText:true};c.border=bd;}); r.height=22; };
   const numFmt='#,##0.###';
@@ -619,7 +628,9 @@ async function makeXlsx(){
   const ws=wb.addWorksheet('Aufmaß Summen',{pageSetup:{paperSize:9,orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0},views:[{state:'frozen',ySplit:8}]});
   ws.columns=[{width:14},{width:60},{width:12},{width:7},{width:14},{width:40},{width:40},{width:12},{width:40}];
   ws.getCell('A1').value='Aufmaß'; ws.getCell('A1').font={bold:true,size:16};
-  ws.getCell('F1').value=FIRMA; ws.getCell('F1').font={color:{argb:'FF666666'}};
+  ws.getCell('A1').font={bold:true,size:16,color:{argb:'FF2F3B53'},name:'Montserrat'};
+  const lgx=await logoData(); if(lgx){ const li=wb.addImage({base64:lgx,extension:'png'}); ws.addImage(li,{tl:{col:6.2,row:0.2},ext:{width:170,height:170*91.014/200}}); }
+  ws.getCell('C1').value=FIRMA; ws.getCell('C1').font={color:{argb:'FF646B78'}};
   [['Bauvorhaben',S.head.bv],['Aufmaß',S.head.bez],['Datum',S.head.dat?new Date(S.head.dat):''],['Aufgemessen von',S.head.mon],['Für AG / Bauleitung',S.head.ag]].forEach((r,i)=>{
     ws.getCell('A'+(i+2)).value=r[0]; ws.getCell('A'+(i+2)).font={bold:true}; ws.getCell('B'+(i+2)).value=r[1]||''; });
   ws.getCell('B4').numFmt='dd.mm.yyyy'; ws.getCell('B4').alignment={horizontal:'left'};
@@ -678,7 +689,7 @@ function renderAreas(){
   const A=areas(); const gs=[...new Set(A.map(a=>a.g))];
   const openG=new Set([...document.querySelectorAll('details.ag[open]')].map(d=>d.dataset.g));
   $('#areaList').innerHTML=gs.map(g=>`<details class="ag" data-g="${esc(g)}" ${openG.has(g)?'open':''}><summary>${esc(g)} <span class="hint">(${A.filter(a=>a.g===g).length})</span></summary>`+
-    A.map((a,i)=>a.g!==g?'':`<div class="al"><span>${esc(a.n)}</span><button class="icon" data-ren="${i}" aria-label="Umbenennen">✎</button><button class="icon" data-del="${i}" aria-label="Löschen">✕</button></div>`).join('')+`</details>`).join('');
+    A.map((a,i)=>a.g!==g?'':`<div class="al"><span>${esc(a.n)}</span><button class="icon" data-ren="${i}" aria-label="Umbenennen">${IC('edit')}</button><button class="icon" data-del="${i}" aria-label="Löschen">${IC('x')}</button></div>`).join('')+`</details>`).join('');
   $('#dl_ag').innerHTML=gs.map(g=>`<option value="${esc(g)}">`).join('');
   $('#areaList').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ const A2=areas().slice(); A2.splice(+b.dataset.del,1); S.areas=A2; save(); renderAreas(); });
   $('#areaList').querySelectorAll('[data-ren]').forEach(b=>b.onclick=()=>{ const A2=areas().map(a=>({...a})); const a=A2[+b.dataset.ren]; const n=prompt('Bereich umbenennen:',a.n); if(n&&n.trim()){ a.n=n.trim(); S.areas=A2; save(); renderAreas(); } });
@@ -710,7 +721,7 @@ function diff(){
   const head=BASE.h!==hKey(), ar=BASE.a!==aKey(S.areas);
   return {e,f,de,df,head,areas:ar,n:e.length+f.length+de.length+df.length+(head?1:0)+(ar?1:0)};
 }
-function setSync(kind,txt){ const el=$('#saveState'); el.textContent=txt; el.style.color=kind==='err'?'#ffd28a':''; }
+function setSync(kind,txt){ const el=$('#saveState'); el.innerHTML=IC(kind==='err'?'cloudoff':(txt.startsWith('✓')?'cloud':'sync'))+'<span>'+esc(txt.replace(/^✓ /,''))+'</span>'; el.style.color=kind==='err'?'var(--amber)':(txt.startsWith('✓')?'var(--ok)':''); }
 function syncStatus(){
   const d=diff();
   if(!navigator.onLine) setSync('err', d.n? `offline · ${d.n} Änderung${d.n>1?'en':''} warten` : 'offline · lokal gespeichert');
